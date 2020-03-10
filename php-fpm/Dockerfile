@@ -21,6 +21,7 @@ RUN "date"
 RUN apt-get update && apt-get install -y libmcrypt-dev mariadb-client \
     && docker-php-ext-install mcrypt pdo_mysql
 
+RUN docker-php-ext-install mysqli
 
 RUN apt-get update && apt-get install -y procps
 

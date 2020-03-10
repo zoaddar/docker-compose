@@ -16,7 +16,7 @@ services:
         - default
     php-fpm:
       build:
-          context: ./php7-fpm
+          context: ./php-fpm
           args:
               TIMEZONE: ${TIMEZONE}
       volumes:
@@ -41,16 +41,16 @@ services:
         - ${APP_PATH}:/var/www/app
         - ./logs/nginx/:/var/log/nginx
       ports:
-        - "80:80"
-        - "443:443"
+        - "8060:80"
+        # - "443:443"
       depends_on:
         - php-fpm
       networks:
         - default
-    phpmyadmin:
+    pma:
       image: phpmyadmin/phpmyadmin
       ports:
-        - 8080:80
+        - 8070:80
       networks:
         - default
       environment:
@@ -61,7 +61,7 @@ services:
       restart: always
       depends_on:
         - db
-      container_name: phpmyadmin
+      container_name: pma
 networks:
   default:
     driver: bridge

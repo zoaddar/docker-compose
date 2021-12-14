@@ -1,4 +1,9 @@
-# skeleton
-Quick start for PHP app
+## Docker-compose with PHP:5.6, MariaDB:latest, PHPmyAdmin, Nginx
 
-All you need is `docker-compose up -d`
+### Quick start for PHP app
+
+`docker-compose up --build -d`
+
+### You can browse from your browser
+
+`http://localhost:8060`

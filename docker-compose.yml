@@ -1,72 +1,71 @@
-version: "3"
+version: "3.5"
 
 services:
-  db:
-    container_name: mariadb-database
-    build:
-      context: ./mariadb
-    volumes:
-      - "./.data/db:/var/lib/mysql"
-      - "./logs/mariadb:/var/log/mysql"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    networks:
-      - default
-
-  php-fpm:
-    container_name: php-engine
-    build:
-      context: ./php-fpm
-      args:
-        TIMEZONE: ${TIMEZONE}
-    volumes:
-      - ${APP_PATH}:/var/www/app
-    environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: ${MYSQL_DATABASE}
-      DB_USERNAME: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-    depends_on:
-      - db
-    networks:
-      - default
-
-  nginx:
-    container_name: nginx-server
-    build:
-      context: ./nginx
-      args:
-        - "php-fpm"
-        - "9000"
-    volumes:
-      - ${APP_PATH}:/var/www/app
-      - ./logs/nginx/:/var/log/nginx
+  
+  local_db:
+    container_name: local_db
+    image: mariadb:v1
+    build: ./dockerimage/db
     ports:
-      - "8060:80"
-    depends_on:
-      - php-fpm
+      - "3306:3306"
+    volumes:
+      - ./dockerimage/db/mysql:/var/lib/mysql
     networks:
-      - default
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    restart: always
 
-  pma:
-    container_name: pma
+  local_app:
+    container_name: local_app
+    image: local_app
+    build: './dockerimage/app'
+    ports:
+      - "3000:80"
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./app:/var/www/html/
+      - ./php/php.ini:/usr/local/etc/php/conf.d/custom.php.ini
+
+  local_pma:
+    container_name: local_pma
     image: phpmyadmin/phpmyadmin
     ports:
-      - 8070:80
+      - 3010:80
     networks:
-      - default
+      - backend
     environment:
       - PMA_ARBITRARY=1
-      - PMA_HOST=db
-      - PMA_USER=${MYSQL_ROOT_USER}
-      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - PMA_HOST=local_db
+      - PMA_USER=root
+      - PMA_PASSWORD=pass
     restart: always
-    depends_on:
-      - db
+
+
+  # local_adminer:
+  #   container_name: local_adminer
+  #   image: adminer
+  #   ports:
+  #     - 3020:8080
+  #   networks:
+  #     - backend
+  #   restart: always
+
+  # local_postgres:
+  #   container_name: local_postgres
+  #   image: postgres
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - PGPASSWORD=adminpostgres
+  #   volumes:
+  #     - ./db/postgres:/var/lib/postgresql/data
+  #   ports:
+  #       - 5433:5433
+  #   networks:
+  #     - backend
+
 networks:
-  default:
-    driver: bridge
+  backend:

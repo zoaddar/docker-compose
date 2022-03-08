@@ -1,4 +1,4 @@
-## Docker-compose with PHP:5.6, MariaDB:latest, PHPmyAdmin, Nginx
+## Docker-compose with PHP:7.2, MariaDB:latest, PHPmyAdmin, Apache2
 
 ### Quick start for PHP app
 
@@ -6,4 +6,4 @@
 
 ### You can browse from your browser
 
-`http://localhost:8060`
+`http://localhost:3000`

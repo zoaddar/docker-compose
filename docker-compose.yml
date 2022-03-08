@@ -27,7 +27,6 @@ services:
       - backend
     volumes:
       - ./app:/var/www/html/
-      - ./php/php.ini:/usr/local/etc/php/conf.d/custom.php.ini
 
   local_pma:
     container_name: local_pma
